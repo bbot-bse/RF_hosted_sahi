@@ -3,8 +3,8 @@ import requests
 from PIL import Image
 
 # Replace with your Roboflow API Key and Model Endpoint
-API_KEY = "YOUR_ROBOFLOW_API_KEY"
-MODEL_ENDPOINT = "your-workspace/your-project/1"  # e.g., "username/project/1"
+API_KEY = "9916rXo9gEB3PSlqx1JH"
+MODEL_ENDPOINT = "flower-counter/1"  # e.g., "username/project/1"
 
 st.set_page_config(page_title="Roboflow Inference", layout="centered")
 st.title("🤖 Roboflow Inference App")
