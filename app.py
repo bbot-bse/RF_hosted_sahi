@@ -1,30 +1,41 @@
 import streamlit as st
-import requests
+from inference_sdk import InferenceHTTPClient
 from PIL import Image
+import os
 
-# Replace with your Roboflow API Key and Model Endpoint
-API_KEY = "9916rXo9gEB3PSlqx1JH"
-MODEL_ENDPOINT = "flower-counter/1"  # e.g., "username/project/1"
+# Initialize client
+client = InferenceHTTPClient(
+    api_url="https://serverless.roboflow.com",
+    api_key=st.secrets["API_KEY"]
+)
 
-st.set_page_config(page_title="Roboflow Inference", layout="centered")
-st.title("🤖 Roboflow Inference App")
+# UI
+st.set_page_config(page_title="Roboflow Workflow Inference", layout="centered")
+st.title("🔍 Roboflow Workflow Inference")
 
 uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
     st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
-    image_bytes = uploaded_file.read()
 
-    with st.spinner("Running inference..."):
-        response = requests.post(
-            f"https://detect.roboflow.com/{MODEL_ENDPOINT}?api_key={API_KEY}",
-            files={"file": image_bytes},
+    # Save image temporarily to disk for SDK compatibility
+    temp_path = "temp_upload.jpg"
+    with open(temp_path, "wb") as f:
+        f.write(uploaded_file.getbuffer())
+
+    with st.spinner("Running Roboflow workflow..."):
+        result = client.run_workflow(
+            workspace_name="cranberry-counting-ycg5p",
+            workflow_id="small-object-detection-sahi",
+            images={"image": temp_path},
+            use_cache=True
         )
 
-    if response.status_code == 200:
-        result = response.json()
-        image_url = result["image"]["url"]
-        st.image(image_url, caption="Predicted", use_column_width=True)
-        st.json(result)
-    else:
-        st.error(f"Error: {response.status_code}")
+    st.success("Inference Complete!")
+    st.json(result)
+
+    # Optionally display image from result
+    if "image" in result and "url" in result["image"]:
+        st.image(result["image"]["url"], caption="Inference Result")
+
+    os.remove(temp_path)
