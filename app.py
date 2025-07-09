@@ -16,7 +16,7 @@ st.title("🔍 Roboflow Workflow Inference")
 uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
-    st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+    st.image(uploaded_file, caption="Uploaded Image", use_container_width=True)
 
     # Save image temporarily to disk for SDK compatibility
     temp_path = "temp_upload.jpg"
